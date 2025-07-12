@@ -2,10 +2,10 @@
   "name": "dar-alhussam-server",
   "version": "1.0.0",
   "description": "Dar Alhussam Server",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
   "dependencies": {
     "@sendgrid/mail": "^8.1.5",
