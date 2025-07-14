@@ -10,12 +10,21 @@ async function fetchAndCacheNews() {
   if (recent.length) return recent;
 
   const resp = await axios.get(NEWS_API_URL, {
-    params: { country: 'us', apiKey: process.env.NEWS_API_KEY, pageSize: 10 }
+    params: { 
+      country: 'us', 
+      apiKey: process.env.NEWS_API_KEY, 
+      pageSize: 10 
+    },
+    headers: {
+      'User-Agent': 'Mozilla/5.0', // ← هذا يجعل Cloudflare لا يحظر الطلب
+    }
   });
+
   const articles = resp.data.articles.map(a => ({
     title: a.title,
     url: a.url,
-    publishedAt: new Date(a.publishedAt)
+    publishedAt: new Date(a.publishedAt),
+    fetchedAt: new Date() // ← ضروري حتى ينجح التخزين المؤقت
   }));
 
   await News.deleteMany({});
