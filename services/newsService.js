@@ -2,20 +2,29 @@
 const axios = require('axios');
 const News = require('../models/NewsModel');
 
-const NEWS_API_URL = 'https://newsapi.org/v2/top-headlines';
+const NEWS_API_URL = 'https://newsdata.io/api/1/news';
 
 async function fetchAndCacheNews() {
   const fiveMinsAgo = new Date(Date.now() - 5 * 60 * 1000);
   const recent = await News.find({ fetchedAt: { $gte: fiveMinsAgo } });
   if (recent.length) return recent;
 
+  // استخدم المفتاح الخاص بك (تخزن في env)
   const resp = await axios.get(NEWS_API_URL, {
-    params: { country: 'us', apiKey: process.env.NEWS_API_KEY, pageSize: 10 }
+    params: {
+      country: 'us',
+      language: 'en',
+      apikey: process.env.NEWSDATA_API_KEY,
+      page: 1
+    }
   });
-  const articles = resp.data.articles.map(a => ({
+
+  // NewsData.io ترجع النتائج في resp.data.results
+  const articles = resp.data.results.map(a => ({
     title: a.title,
-    url: a.url,
-    publishedAt: new Date(a.publishedAt)
+    url: a.link,
+    publishedAt: new Date(a.pubDate),
+    fetchedAt: new Date()
   }));
 
   await News.deleteMany({});
