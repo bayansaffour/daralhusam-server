@@ -1,13 +1,26 @@
 // backend/services/newsService.js
+const axios = require('axios');
 const News = require('../models/NewsModel');
 
-async function fetchAndCacheNews() {
-  // بدل ما نتحقق من الوقت، بنجيب آخر 10 أخبار مباشرة
-  const recent = await News.find({})
-    .sort({ publishedAt: -1 })
-    .limit(10);
+const NEWS_API_URL = 'https://newsapi.org/v2/top-headlines';
 
-  return recent;
+async function fetchAndCacheNews() {
+  const fiveMinsAgo = new Date(Date.now() - 5 * 60 * 1000);
+  const recent = await News.find({ fetchedAt: { $gte: fiveMinsAgo } });
+  if (recent.length) return recent;
+
+  const resp = await axios.get(NEWS_API_URL, {
+    params: { country: 'us', apiKey: process.env.NEWS_API_KEY, pageSize: 10 }
+  });
+  const articles = resp.data.articles.map(a => ({
+    title: a.title,
+    url: a.url,
+    publishedAt: new Date(a.publishedAt)
+  }));
+
+  await News.deleteMany({});
+  const saved = await News.insertMany(articles);
+  return saved;
 }
 
 module.exports = { fetchAndCacheNews };
