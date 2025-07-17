@@ -26,7 +26,6 @@ const registerRoutes = require("./routes/register");
 const homeRoutes = require("./routes/homeRoutes");
 const resourceRoutes = require("./routes/resourceRoutes");
 const bookingRoutes = require("./routes/bookingRoutes");
-const newsBarRoutes = require("./routes/newsBarRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
 
 // إنشاء التطبيق
@@ -65,7 +64,6 @@ app.use("/api/success", successStoryRoutes);
 app.use("/api/home", homeRoutes);
 app.use("/api/resources", resourceRoutes);
 app.use("/api/bookings", bookingRoutes);
-app.use("/api/newsBar", newsBarRoutes);
 app.use("/api/upload", uploadRoutes);
 
 // التعامل مع الأخطاء العامة
